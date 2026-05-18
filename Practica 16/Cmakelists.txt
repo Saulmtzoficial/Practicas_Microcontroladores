@@ -1,0 +1,44 @@
+cmake_minimum_required(VERSION 3.12)
+
+# Si usas CMake puro es "pico_w", si usas PlatformIO recuerda usar "picow" en tu platformio.ini
+set(PICO_BOARD pico_w CACHE STRING "Board type")
+
+# Importar SDK (debe estar antes de project)
+include(pico_sdk_import.cmake)
+
+if (PICO_SDK_VERSION_STRING VERSION_LESS "1.5.0")
+    message(FATAL_ERROR "Raspberry Pi Pico SDK version 1.5.0 (or later) required. Your version is ${PICO_SDK_VERSION_STRING}")
+endif()
+
+project(lampara_ble C CXX ASM)
+
+set(CMAKE_C_STANDARD 11)
+set(CMAKE_CXX_STANDARD 17)
+
+pico_sdk_init()
+
+add_executable(lampara_ble
+    main.c
+)
+
+# ¡AQUÍ ESTÁ LA MAGIA! Agregamos hardware_adc para que funcione tu LDR
+target_link_libraries(lampara_ble
+    pico_stdlib
+    hardware_adc
+    pico_btstack_ble
+    pico_btstack_cyw43
+    pico_cyw43_arch_none
+)
+
+target_include_directories(lampara_ble PRIVATE
+    ${CMAKE_CURRENT_LIST_DIR}
+)
+
+pico_btstack_make_gatt_header(lampara_ble PRIVATE
+    "${CMAKE_CURRENT_LIST_DIR}/lampara.gatt"
+)
+
+pico_enable_stdio_usb(lampara_ble 1)
+pico_enable_stdio_uart(lampara_ble 0)
+
+pico_add_extra_outputs(lampara_ble)
