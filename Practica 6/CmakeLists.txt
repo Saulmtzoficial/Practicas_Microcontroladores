@@ -1,0 +1,18 @@
+cmake_minimum_required(VERSION 3.13)
+
+include(pico_sdk_import.cmake)
+set(PICO_BOARD pico_w) # Le decimos al compilador que la placa es la W
+
+project(Practica_6) # El nombre de la carpeta de proyecto
+
+pico_sdk_init() # Inicializa el SDK del proyecto
+
+add_executable(Pulsador # Nombre del archivo sin terminacion .c
+    Pulsador.c          # Nombre del archivo de codigo con extension .c
+)
+
+target_link_libraries(Pulsador # Nombre del archivo sin terminacion .c
+    pico_stdlib                # Librerias que se estaran usando en el proyecto
+)
+
+pico_add_extra_outputs(Pulsador) # Modulo que genera versiones del codigo compilado
